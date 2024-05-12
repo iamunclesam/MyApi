@@ -1,36 +1,36 @@
 const express = require("express");
 const app = express();
-const port = 8080;
-const mongoose = require("mongoose");
+const morgan = require("morgan");
+const createError = require("http-errors");
+require("dotenv").config();
+require("./helpers/init_mongodb.js");
+
+const PORT = process.env.PORT || 8080;
 const productRoute = require("./routes/productRoutes.js");
+const categoryRoute = require("./routes/categoryRoutes.js");
 const userRoute = require("./routes/userRoutes.js");
+const AuthRoute = require("./routes/Auth_route.js");
+const { verifyAccessToken } = require("./helpers/jwt_helper.js");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-//routes
-app.use("/api/", productRoute);
-app.use("/api/", userRoute);
+// app.get("/", verifyAccessToken, (req, res) => {
+//   res.send({message: "Welcome"});
+// });
 
-app.get("/", (req, res) => {
-  res.send({
-    name: "Adeyemi",
-    occupation: "Software Developer",
-  });
+//routes
+app.use("/api", verifyAccessToken, productRoute);
+app.use("/api", verifyAccessToken, categoryRoute);
+app.use("/api/", userRoute);
+app.use("/api/auth", AuthRoute);
+
+app.use(async (req, res, next) => {
+  next(createError.NotFound("This route does not exist"));
 });
 
-mongoose
-  .connect(
-    "mongodb+srv://adeyemis958:21gDfk54C2hU3QWi@test-server.alul3vt.mongodb.net/Node-Api?retryWrites=true&w=majority&appName=Test-Server"
-  )
-  .then(() => {
-    console.log("Connected Database");
-  })
+app.use(morgan("dev"));
 
-  .catch(() => {
-    console.log("Connection Failed");
-  });
-
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });

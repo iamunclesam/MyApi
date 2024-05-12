@@ -23,6 +23,29 @@ const createNewUser = async (req, res) => {
   }
 };
 
+const loginUser = async (req, res) => {
+  try {
+    const result = await authSchema.validateAsync(req.body);
+    
+    const user = await User.findOne({ email:result.email
+    })
+
+    if(!user) throw createHttpError.NotFound("User not registered")
+
+    const isMatch = await user.isValidPassword(result.password)
+
+    if(!isMatch) throw createHttpError.Unauthorized("Email or password not valid")
+
+    const accessToken = await signAccessToken(user.id)
+    const refreshToken = await signRefreshToken(user.id)
+    res.send({accessToken, refreshToken})
+
+  } catch (error) {
+    if(error.isJoi == true) return next(createHttpError.BadRequest("Invalid Email/Password"))
+    next(error);
+  }
+};
+
 const getAllUser = async (req, res) => {
   try {
     const users = await User.find();
@@ -70,6 +93,7 @@ const deleteUserById = async (req, res) => {
 
 module.exports = {
   createNewUser,
+  loginUser,
   getAllUser,
   getUserById,
   updateUserById,

@@ -8,7 +8,7 @@ module.exports = {
 
       const secret = process.env.ACCESS_TOKEN_SECRET;
       const options = {
-        expiresIn: "1h", // Set expiration time to one hour
+        expiresIn: "2h", // Set expiration time to one hour
         issuer: "pickurpackage.com",
         audience: userId,
       };

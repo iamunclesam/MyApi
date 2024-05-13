@@ -1,12 +1,14 @@
 const express = require("express")
 const router = express.Router();
-const { getProducts, getProduct, createProduct, updateProduct, deleteProduct } = require("../controllers/product/productController.js")
+const { getProducts, getProduct, getProductsByCategory, createProduct, updateProduct, deleteProduct } = require("../controllers/product/productController.js")
 const { verifyAccessToken } = require("../helpers/jwt_helper.js");
 
 
 router.get('/products', verifyAccessToken, getProducts);
 
 router.get('/products/:id', verifyAccessToken, getProduct)
+
+router.get('/products/category/:categoryId', verifyAccessToken, getProductsByCategory)
 
 router.post('/products',  verifyAccessToken, createProduct)
 

@@ -4,12 +4,12 @@ const { createNewUser, getAllUser, getUserById, updateUserById, deleteUserById }
 
 router.get('/users', getAllUser);
 
-router.get('users/:id', getUserById)
+router.get('/users/:id', getUserById)
 
 router.post('/users', createNewUser)
 
-router.put('users/:id', updateUserById)
+router.put('/users/:id', updateUserById)
 
-router.delete('users/:id', deleteUserById)
+router.delete('/users/:id', deleteUserById)
 
 module.exports = router

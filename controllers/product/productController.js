@@ -19,6 +19,21 @@ const getProduct = async (req, res, next) => {
   }
 };
 
+const getProductsByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const products = await Product.find({ category: categoryId });
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found for this category" });
+    }
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const createProduct = async (req, res) => {
   try {
     const product = await Product.create(req.body);
@@ -58,7 +73,9 @@ const deleteProduct = async (req, res) => {
 module.exports = {
   getProducts,
   getProduct,
+  getProductsByCategory,
   createProduct,
   updateProduct,
   deleteProduct,
+
 };

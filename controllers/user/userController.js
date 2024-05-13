@@ -23,7 +23,7 @@ const createNewUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   try {
     const result = await authSchema.validateAsync(req.body);
     

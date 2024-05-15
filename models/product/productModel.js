@@ -27,7 +27,19 @@ const ProductSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
       required: true
-    }
+    },
+
+    ratings: [
+      {
+        value: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 5,
+          default: 1,
+        }
+      }
+    ]
   },
   {
     timestamps: true,

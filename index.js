@@ -10,6 +10,8 @@ const productRoute = require("./routes/productRoutes.js");
 const categoryRoute = require("./routes/categoryRoutes.js");
 const userRoute = require("./routes/userRoutes.js");
 const cartRoute = require("./routes/cartRoute.js")
+const checkoutRoute = require("./routes/checkout.js")
+const orderRoute = require("./routes/orderRoute.js")
 const AuthRoute = require("./routes/Auth_route.js");
 const { verifyAccessToken } = require("./helpers/jwt_helper.js");
 
@@ -21,7 +23,7 @@ app.get("/", verifyAccessToken, (req, res) => {
 });
 
 //routes
-app.use("/api", productRoute, categoryRoute, userRoute, cartRoute);
+app.use("/api", productRoute, categoryRoute, userRoute, cartRoute, checkoutRoute, orderRoute);
 app.use("/api/auth", AuthRoute);
 
 app.use(async (req, res, next) => {

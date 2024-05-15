@@ -57,6 +57,50 @@ const updateProduct = async (req, res) => {
   }
 };
 
+const rateSingleProduct = async (req, res) => {
+  try {
+    const { value } = req.body;
+    const { id } = req.params;
+
+    // Find the product by its ID
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Add the rating to the product's ratings array
+    product.ratings.push({ value }); // Wrap the value in an object
+    await product.save();
+
+    res.status(201).json({ message: 'Rating added successfully' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+const getSingleProductRating =  async (req, res) => {
+  const { productId } = req.params;
+
+  try {
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const ratings = product.ratings;
+    res.status(200).json(ratings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -76,6 +120,8 @@ module.exports = {
   getProductsByCategory,
   createProduct,
   updateProduct,
+  rateSingleProduct,
+  getSingleProductRating,
   deleteProduct,
 
 };

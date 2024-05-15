@@ -4,10 +4,6 @@ const { createOrdersFromCheckouts, updateOrderStatus, cancelOrder } = require(".
 const { verifyAccessToken } = require("../helpers/jwt_helper.js");
 
 
-
-router.post('/orders', verifyAccessToken, createOrdersFromCheckouts)
-
-
 // router.get('/orders', verifyAccessToken, getAllOrders );
 
 // Route to update order status

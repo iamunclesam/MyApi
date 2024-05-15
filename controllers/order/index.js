@@ -1,29 +1,16 @@
 const Order = require("../../models/orders/index.js");
 const Checkout = require("../../models/checkout/checkoutModel.js");
 
-const createOrdersFromCheckouts = async (req, res) => {
+const getSuccessfulCheckouts = async (req, res) => {
   try {
-    const checkout = await Checkout.findOne({ paymentStatus: "Success" });
+    const userId = req.params.userId;
 
-    if (!checkout) {
-      return res.status(404).json({ message: "No successful checkout found" });
-    }
+    // Retrieve successful checkouts for the user
+    const successfulCheckouts = await Checkout.find({ userId, paymentStatus: "Success" });
 
-    // Create order using the entire checkout document
-    const order = new Order({
-      userId: checkout.userId,
-      paymentStatus: checkout.paymentStatus,
-      checkoutId: checkout.id,
-      orderStatus: checkout.orderStatus,
-      totalAmount: checkout.totalAmount,
-    });
-
-    // Save the order to the database
-    const savedOrder = await order.save();
-
-    res.status(200).json(savedOrder);
+    res.status(200).json(successfulCheckouts);
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("Error retrieving successful checkouts:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -42,43 +29,29 @@ const getOrderByUserId = async (req, res, next) => {
 };
 
 const updateOrderStatus = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { paymentStatus, checkoutId, orderStatus, totalAmount } = req.body;
-  
-      // Construct the query object to find the order by its _id
-      const filter = { _id: id };
-  
-      // Update the order based on the provided fields
-      const updatedOrder = await Order.findOneAndUpdate(
-        filter,
-        {
-          paymentStatus: paymentStatus,
-          checkoutId: checkoutId,
-          orderStatus: orderStatus,
-          totalAmount: totalAmount,
-        },
-        { new: true }
-      );
-  
-      if (!updatedOrder) {
-        throw new Error("Order not found");
-      }
-  
-      // Return the data in the specified format
-      const responseData = {
-        userId: updatedOrder.userId,
-        paymentStatus: updatedOrder.paymentStatus,
-        checkoutId: updatedOrder.checkoutId,
-        orderStatus: updatedOrder.orderStatus,
-        totalAmount: updatedOrder.totalAmount,
-      };
-  
-      res.status(200).json(responseData);
-    } catch (error) {
-      console.error("Error updating order status:", error.message);
-      res.status(500).json({ error: "Error updating order status" });
-    }
+
+  try {
+    const userId = req.params.userId;
+    // Retrieve successful checkouts for the user
+    const successfulCheckouts = await Checkout.find({ userId, paymentStatus: "Success" });
+
+    res.status(200).json(successfulCheckouts);
+  } catch (error) {
+    console.error("Error retrieving successful checkouts:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+
+
+
+   // Update order status for each successful checkout
+   for (const checkout of successfulCheckouts) {
+    // Update order status to "completed" for each successful checkout
+    await Order.findOneAndUpdate(
+      { _id: checkout.orderId }, // Assuming there's an orderId field in Checkout model
+      { orderStatus: "completed" }
+    );
+  }
   };
   
 
@@ -130,7 +103,7 @@ const cancelOrder = async (req, res) => {
 
 
 module.exports = {
-  createOrdersFromCheckouts,
+  getSuccessfulCheckouts,
   updateOrderStatus,
   getOrderByUserId,
   cancelOrder,

@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/", verifyAccessToken, (req, res) => {
-  res.send({message: "Welcome"});
+  res.send({message: "Welcome to shoppers-ng api"});
 });
 
 //routes
@@ -35,3 +35,5 @@ app.use(morgan("dev"));
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
+
+export default app
